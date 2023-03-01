@@ -2,17 +2,25 @@ import { Container } from "../Container/Container.jsx";
 import { Order } from "../Order/Order.jsx";
 import style from './Catalog.module.css';
 import {CatalogProduct} from '../CatalogProduct/CatalogProduct.jsx';
+import { useSelector, useDispatch } from "react-redux";
+import { productRequestAsync } from "../../store/product/productSlice.js";
+import {useEffect} from 'react';
 
-const goodsList = [
-  { title: 'Мясная бомба' },
-  { title: 'Супер сырный' },
-  { title: 'Сытный' },
-  { title: 'Итальянский' },
-  { title: 'Вечная классика' },
-  { title: 'Тяжелый удар' },
-];
+
 
 export const Catalog =()=>{
+
+  const {products} = useSelector(state=>state.product);
+  const dispatch = useDispatch();
+  const {category, activeCategory} =useSelector(state=>state.category);
+
+
+  useEffect(()=>{
+    if(category.length){
+      dispatch( productRequestAsync(category[activeCategory].title))
+    }
+    
+  },[category, activeCategory]);
 
     return (
 
@@ -22,18 +30,21 @@ export const Catalog =()=>{
         
         <Order/>
           <div className={style.wrapper}>
-            <h2 className={style.title}>Бургеры</h2>
+            <h2 className={style.title}>{category[activeCategory]?.rus}</h2>
   
             <div className={style.wrap_list}>
-              <ul className={style.list}>
-              {goodsList.map((item, index)=>(
-                  <li key={index} className={style.item}>
-                  <CatalogProduct title={item.title}/>
+            {products.length?(<ul className={style.list}>
+              {products.map((item)=>(
+                  <li key={item.id} className={style.item}>
+                  <CatalogProduct item={item}/>
                 </li>
               ))}
               
   
-              </ul>
+              </ul>) : (
+                <p className={style.empty}> К сожалению товаров данной категории нет</p>
+              )}
+              
             </div>
           </div>
           </div>

@@ -26,7 +26,22 @@ const categorySlice = createSlice({
       state.activeCategory = action.payload.indexCategory    
     }
   },
-  extraReducers: {
+  extraReducers: 
+  (builder) => {
+    builder
+      .addCase(categoryRequestAsync.pending, (state) => {
+        state.error = "";
+      })
+      .addCase(categoryRequestAsync.fulfilled, (state, action) => {
+        state.error = "";
+        state.category = action.payload;
+      })
+      .addCase(categoryRequestAsync.rejected, (state, action) => {
+        state.error = action.payload.error;
+      });
+  },  
+  
+  /*{
     [categoryRequestAsync.pending.type]:(state)=>{
       state.error ='';
     },
@@ -37,7 +52,7 @@ const categorySlice = createSlice({
     [categoryRequestAsync.rejected.type]:(state, action)=>{      
       state.error = action.payload.error;      
   }
-  }
+  }*/
 
 });
 
